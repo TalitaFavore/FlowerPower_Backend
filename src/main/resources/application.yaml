@@ -1,0 +1,13 @@
+server:
+  port: 8889
+spring:
+  application:
+    name: FlowerPower
+  datasource:
+    url: jdbc:postgresql://localhost:5432/FlowerPower
+    username: postgres
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: true
