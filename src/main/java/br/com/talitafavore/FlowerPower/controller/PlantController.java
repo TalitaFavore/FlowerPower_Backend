@@ -62,7 +62,24 @@ public class PlantController {
     }
 
     // Atualização de uma planta existente
-    @PutMapping
+
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    @Operation(summary = "Atualiza uma Plant (Planta) existente", tags = {"Plants"},
+            responses = {
+                    @ApiResponse(description = "Plant atualizada com sucesso!", responseCode = "200", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PlantDto.class)
+                    )}),
+                    @ApiResponse(description = "Resource not found", responseCode = "404", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<PlantDto> update(@RequestBody PlantDto plantDto) {
         PlantDto updatedPlant = plantService.update(plantDto);
         return new ResponseEntity<>(updatedPlant, HttpStatus.OK);
@@ -70,13 +87,38 @@ public class PlantController {
 
     // Exclusão de uma planta pelo ID
     @DeleteMapping("/{id}")
+    @Operation(summary = "Exclui uma Plant (Planta) pelo ID informado", tags = {"Plants"},
+            responses = {
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Resource not found", responseCode = "404", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<Void> delete(@PathVariable(name = "id") long id) {
         plantService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Listagem de todas as plantas com paginação e ordenação
-    @GetMapping
+    @GetMapping(produces = "application/json")
+    @Operation(summary = "Lista todas as Plants (Plantas) com paginação e ordenação", tags = {"Plants"},
+            responses = {
+                    @ApiResponse(description = "Lista de Plants recuperada com sucesso!", responseCode = "200", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PagedModel.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<PagedModel<EntityModel<PlantDto>>> findAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,

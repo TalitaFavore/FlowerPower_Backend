@@ -62,7 +62,23 @@ public class TypeController {
     }
 
     // Atualização de um tipo existente
-    @PutMapping
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    @Operation(summary = "Atualiza um Type (Tipo) existente", tags = {"Types"},
+            responses = {
+                    @ApiResponse(description = "Type atualizado com sucesso!", responseCode = "200", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TypeDto.class)
+                    )}),
+                    @ApiResponse(description = "Resource not found", responseCode = "404", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<TypeDto> update(@RequestBody TypeDto typeDto) {
         TypeDto updatedType = typeService.update(typeDto);
         return new ResponseEntity<>(updatedType, HttpStatus.OK);
@@ -70,13 +86,38 @@ public class TypeController {
 
     // Exclusão de um tipo pelo ID
     @DeleteMapping("/{id}")
+    @Operation(summary = "Exclui um Type (Tipo) pelo ID informado", tags = {"Types"},
+            responses = {
+                    @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Resource not found", responseCode = "404", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<Void> delete(@PathVariable(name = "id") long id) {
         typeService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Listagem de todos os tipos com paginação e ordenação
-    @GetMapping
+    @GetMapping(produces = "application/json")
+    @Operation(summary = "Lista todos os Types (Tipos) com paginação e ordenação", tags = {"Types"},
+            responses = {
+                    @ApiResponse(description = "Lista de Types recuperada com sucesso!", responseCode = "200", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PagedModel.class)
+                    )}),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CustomExceptionResponse.class)
+                    )})
+            }
+    )
     public ResponseEntity<PagedModel<EntityModel<TypeDto>>> findAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
